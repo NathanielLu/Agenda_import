@@ -33,13 +33,13 @@ def find_result(sessions, speakers, speaker_for_session, column, value):
     elif column == "time_end":
         list = sessions.select(['id', 'parentSession'], {'endTime': value})
     elif column == "title":
-        list = sessions.select(['id', 'parentSession'], {'title': value})
+        list = sessions.select(['id', 'parentSession'], {'title': convert_apos(value)})
     elif column == "location":
         list = sessions.select(['id', 'parentSession'], {'location': value})
     elif column == "description":
-        list = sessions.select(['id', 'parentSession'], {'description': extract_web(value)})
+        list = sessions.select(['id', 'parentSession'], {'description': extract_web(convert_apos(value))})
     elif column == "speaker":
-        speaker_ids = speakers.select(['id'], {'name': value})
+        speaker_ids = speakers.select(['id'], {'name': convert_apos(value)})
         session_ids = []
         for i in range(len(speaker_ids)):
             session_id_list = speaker_for_session.select(['sessionId'], {'speakerId': speaker_ids[i]['id']})
