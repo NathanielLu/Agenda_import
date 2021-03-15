@@ -1,7 +1,9 @@
+import sys
 from db_table import db_table
 import re
 
 
+# Get sessions, speakers, speaker_for_session tables
 def get_tables():
     sessions = db_table("sessions", {"id": "integer PRIMARY KEY", "date": "text NOT NULL", "startTime": "text NOT NULL",
                                      "endTime": "text NOT NULL", "parentSession": "integer NOT NULL",
@@ -13,7 +15,16 @@ def get_tables():
     return sessions, speakers, speaker_for_session
 
 
+# For the given column and field, find the corresponding records in the database
+# The column has to be one of the following: date, time_start, time_end, title, location, description, speaker
+# It has to be exact match, so the look up function is case sensitive
 def find_result(sessions, speakers, speaker_for_session, column, value):
+    if column != "date" and column != "time_start" and column != "time_end" and column != "title" \
+            and column != "location" and column != "description" and column != "speaker":
+        print("The column has to be one of the following: date, time_start, time_end, "
+              "title, location, description, speaker")
+        exit()
+
     list = []
     if column == "date":
         list = sessions.select(['id', 'parentSession'], {'date': value})
@@ -49,20 +60,25 @@ def find_result(sessions, speakers, speaker_for_session, column, value):
             for sub_item in subset:
                 session_set.add(sub_item['id'])
 
-    print(session_set)
+    print("The results are:")
+    for sid in session_set:
+        print(sessions.select(['id', 'date', 'startTime', 'endTime', 'title', 'location'],
+                              {'id': sid}))
 
 
+# Remove useless web tag from the input
 def extract_web(text):
     tar = re.compile(r'<[^>]+>')
     return tar.sub('', text)
 
 
+# Change the ' to be @ so that the sql insert statement can be executed
 def convert_apos(str):
     return str.replace("'", "@")
 
 
 if __name__ == '__main__':
     sessions, speakers, speaker_for_session = get_tables()
-    column = "speaker"
-    value = "Jiaqi Zhang"
+    column = sys.argv[1]
+    value = sys.argv[2]
     find_result(sessions, speakers, speaker_for_session, column, value)
