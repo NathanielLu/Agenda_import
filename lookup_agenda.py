@@ -62,7 +62,7 @@ def find_result(sessions, speakers, speaker_for_session, column, value):
 
     print("The results are:")
     for sid in session_set:
-        print(sessions.select(['id', 'date', 'startTime', 'endTime', 'title', 'location'],
+        print(sessions.select(['id', 'date', 'startTime', 'endTime', 'title', 'location', 'description'],
                               {'id': sid}))
 
 
